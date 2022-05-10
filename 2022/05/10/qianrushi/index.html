@@ -1,0 +1,439 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title> - 阿光的博客</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="嵌入式的几种数据校验方式
+最近在给客户适配FOTA业务...">
+  <meta name="author" content="阿光">
+  <link rel="icon" href="/images/icons/log_16x16.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/images/icons/log_32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/images/icons/log_180x180.png" sizes="180x180">
+  <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/log_144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="https://at.alicdn.com/t/font_1445822_p6ry5n7lrr.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/solarized-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      loading: {
+        gif: '/images/theme/loading.gif',
+        lottie: ''
+      },
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: {
+          gif: '/images/theme/loading.gif',
+          lottie: ''
+        }
+      },
+      donate: {
+        enable: true,
+        alipay: 'https://pic.izhaoo.com/alipay.jpg',
+        wechat: 'https://pic.izhaoo.com/wechat.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          typing: true,
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: true,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        type: 'default'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      },
+      search: {
+        enable: false,
+        path: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="lock-screen">
+  <div class="loading" id="loading"></div>
+  
+    
+
+
+  
+  
+
+<nav class="menu">
+  <div class="menu-container">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/galleries/ " class="underline "> 摄影</a>
+      </li><li class="menu-item">
+        <a href="/archives/ " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/categories/ " class="underline "> 分类</a>
+      </li><li class="menu-item">
+        <a href="/about/ " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">阿光</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title"></h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>五月 10, 2022</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4755</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        
+        <h1 id="嵌入式的几种数据校验方式"><a href="#嵌入式的几种数据校验方式" class="headerlink" title="嵌入式的几种数据校验方式"></a>嵌入式的几种数据校验方式</h1><hr>
+<p>最近在给客户适配FOTA业务的时候，遇到了一个问题，我们的模组下载完差分包之后显示数据校验不通过，但是对比了差分包和模组下载存储的文件发现是一致的，通过对比客户MCU端的验证代码以及某友商的指令集发现我们对于差分包的校验方式与友商的不太一致，我们采取的是16位和校验的方式计算文件，而客户的MCU端使用的16位异或校验来计算，这是导致文件校验失败的原因。</p>
+<p>趁此机会，顺便总结一下我们日常对于文件校验的一些算法。发车发车……</p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><hr>
+<p>以上说到了几种嵌入式开发中比较常见的几种数据校验方式，我们从和校验开始说起吧！</p>
+<h4 id="校验和"><a href="#校验和" class="headerlink" title="校验和"></a>校验和</h4><hr>
+<p>校验和是一种比较简单的校验方式，当然重要的不是有多难，而是了解它是一个什么样的计算方式，应该如何编码？假设我们需要做的是16位校验和，那么最快的方法就是使用一个int类型(32位)来存放这个数据，这样的话我们就很方便的处理了进位问题。</p>
+<p>假设我们有一个文件名为 test.txt 存在文件系统里面.文件的内容是guangjie.hao.在计算校验和之前我们需要把这一串数据看成是16进制的序列，这就要求每两个字节组成一个组合，组合的第一个字节左移8位做高位，然后依次求和即可，如果字节长度为奇数的话则需要在数据末尾补一个0来凑成偶数。</p>
+<p>我们按照ascii码表将其一一翻译成十六进制可得：</p>
+<p>由于我们刚好是偶数位，所以我们不需要在末尾补0，两两一组按位组合,组合的第一个数据按位左移8位做高8位即可得到：</p>
+<blockquote>
+<p>0X6775,0X616E,0X676A,0X6965,0X2E68,0X6167.</p>
+</blockquote>
+<p>然后我们做一个十六进制的加法：</p>
+<blockquote>
+<p>0X6775+0X616E+0X676A+0X6965+0X2E68+0X6167</p>
+</blockquote>
+<p>我们通过计算器求得他们的十进制的累加和为141697。即：</p>
+<blockquote>
+<p>高16位：0000 0000 0000 0010</p>
+</blockquote>
+<blockquote>
+<p>低16位：0010 1001 1000 0001</p>
+</blockquote>
+<p>然后我们再将高16位和低16位进行求和得到：0010 1001 1000 0011。就可以得到该文件的16位校验和为：0x2983.以上便是16位校验和的计算方法，当然这个有符号的16位校验和，如果是无符号的话，那求和后的高16位会被截取掉，只留下低16位的数据位。具体的代码实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">static uint16_t checksum(uint16_t *data, <span class="built_in">int</span> <span class="built_in">len</span>)</span><br><span class="line">&#123;  </span><br><span class="line">    uint32_t <span class="built_in">sum</span> = <span class="number">0</span>;  </span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">len</span> &gt; <span class="number">1</span>) </span><br><span class="line">    &#123;    </span><br><span class="line">        <span class="built_in">sum</span> += *data++;    <span class="built_in">len</span> -= sizeof(uint16_t); </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">len</span>) </span><br><span class="line">    &#123;    </span><br><span class="line">        <span class="built_in">sum</span> += *(uint16_t*)data;  &#125;  <span class="keyword">while</span>(<span class="built_in">sum</span> &gt;&gt; <span class="number">16</span>)    </span><br><span class="line">        <span class="built_in">sum</span> = (<span class="built_in">sum</span>&gt;&gt;<span class="number">16</span>) + (<span class="built_in">sum</span> &amp; <span class="number">0xffff</span>);  </span><br><span class="line">        <span class="keyword">return</span> (uint16_t)(~<span class="built_in">sum</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="异或校验"><a href="#异或校验" class="headerlink" title="异或校验"></a>异或校验</h4><hr>
+<p>我们了解了上面的16位校验和之后，对于16位的异或校验就好理解了，同样是上文中的test.txt文档，前面的步骤一样，两两一组，每组第一个数据左移8位得到：0X6775,0X616E,0X676A,0X6965,0X2E68,0X6167。然后两两求异或，步骤大概是这样：</p>
+<p>这个过程还是比较好理解的，这样一直计算下去直到最后一个数据被异或完，则整个运算过程完毕。8位的异或运算比较常见，但是过程和这个类似，区别在于数据不用左移，直接两两求异或即可！16位的异或校验和代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">uint16_t</span> <span class="title">bcc16_check</span><span class="params">(<span class="type">const</span> <span class="type">uint8_t</span> *data, <span class="type">uint32_t</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;    </span><br><span class="line">    <span class="type">uint16_t</span> </span><br><span class="line">    bcc16 = <span class="number">0</span>;    </span><br><span class="line">    <span class="type">uint32_t</span> i = <span class="number">0</span>;    </span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; len; i+=<span class="number">2</span>)    </span><br><span class="line">    &#123;        </span><br><span class="line">        <span class="keyword">if</span>(len % <span class="number">2</span> ==<span class="number">1</span> &amp;&amp; (i == len <span class="number">-1</span>))/奇数个数据则最后一位为<span class="number">0</span>        </span><br><span class="line">        &#123;            </span><br><span class="line">            bcc16 ^= (<span class="type">uint16_t</span>)(data[i]&lt;&lt; <span class="number">8</span> | <span class="number">0</span>);       </span><br><span class="line">        &#125;        </span><br><span class="line">        <span class="keyword">else</span>        </span><br><span class="line">        &#123;             </span><br><span class="line">            bcc16 ^= (<span class="type">uint16_t</span>)(data[i]&lt;&lt; <span class="number">8</span> | data[i+<span class="number">1</span>]);        </span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">return</span> bcc16; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>8位的就不细说了，网上的资料较多，可以自行查阅！</p>
+<h4 id="循环冗余校验"><a href="#循环冗余校验" class="headerlink" title="循环冗余校验"></a>循环冗余校验</h4><hr>
+<p>CRC校验其实有多种不同位数的算法，不同的算法拥有不同的生成多项式，这里我们假设该算法的生成多项式为G(x) &#x3D; x^4+x^3+1(11001),要发送的数据帧多项式为F(x) &#x3D; x^7+x^5+x^4+x+1(10110011),我们应该如何求出这个数据帧的CRC校验码呢？(注：每一种位数的算法都有其固定的生成多项式，我们不可以随意更改)</p>
+<blockquote>
+<ul>
+<li>我们用该算法规定的生成多项式G(x)作为模二除法(模二运算可以自行百度，比较简答)的除数，对于上面的例子，这个除数就是11001.</li>
+<li>我们假设除数的位数有K位，那么我们就需要在要发送的数据帧后面加上(k-1)个0.</li>
+<li>然后我们用这个新帧以模二除法的方式除以G(x),所得到的余数就是该新帧的CRC校验码.</li>
+<li>将CRC校验码附着在原数据帧F(x)的后面,构建一个新的数据帧发送到接收端，最后将接收端将接到的数据使用模二除法除以G(x),如果没有余数，则说明数据在传输的过程中没有出错！</li>
+</ul>
+</blockquote>
+<p>模二除法的过程如下图所示：</p>
+<p>我们根据以上的算法得到的新数据帧就是101100110100，将这个数据帧发送出去即可！</p>
+<p>我们以CRC-8标准生成多项式为例：</p>
+<p>CRC-8       x8+x5+x4+1              0x31（0x131）</p>
+<p>二进制为：100110001来计算一个字节0x11的CRC_8校验码：0x11–00010001 我们使用上面的方法计算可得：</p>
+<p>代码计算可以参考如下：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">unsigned <span class="keyword">char</span> cal_table_high_first(unsigned <span class="keyword">char</span> value)</span><br><span class="line">&#123;    </span><br><span class="line">    unsigned <span class="keyword">char</span> i, <span class="keyword">crc</span>;    <span class="keyword">crc</span> = value;    <span class="comment">/* 数据往左移了8位，需要计算8次 */</span>    </span><br><span class="line">    <span class="keyword">for</span> (i=8; i&gt;0; --i)   </span><br><span class="line">    &#123;         </span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">crc</span> &amp; 0x80)  <span class="comment">/* 判断最高位是否为1 */</span>        </span><br><span class="line">        &#123;        <span class="comment">/* 最高位为1，不需要异或，往左移一位，然后与0x31异或 */</span>       </span><br><span class="line">        <span class="comment">/* 0x31(多项式：x8+x5+x4+1，100110001)，最高位不需要异或，直接去掉 */</span>            </span><br><span class="line">            <span class="keyword">crc</span> = (<span class="keyword">crc</span> &lt;&lt; 1) ^ 0x31;       </span><br><span class="line">        &#125;        </span><br><span class="line">        <span class="keyword">else</span>        </span><br><span class="line">        &#123;            </span><br><span class="line">        <span class="comment">/* 最高位为0时，不需要异或，整体数据往左移一位 */</span>            </span><br><span class="line">            <span class="keyword">crc</span> = (<span class="keyword">crc</span> &lt;&lt; 1);        </span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">crc</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他16位的或者32位的原理类似，都是如此计算的，网上的源码例程也比较多，大家可以自行观看！</p>
+<h4 id="MD5校验"><a href="#MD5校验" class="headerlink" title="MD5校验"></a>MD5校验</h4><hr>
+<p>即摘要算法第五版，通过特定的hash散列算法将文本信息转化为信息摘要，是一种集压缩+加密+hash算法的结合体，用于确保信息完整一致，由美国密码学家罗纳德.李维斯特设计出来的。</p>
+<p>MD5以512位分组来处理输入的信息，每一个分组又被划分为16个32位的子分组，经过一些列处理之后，算法的输出由4个32位的分组组成，将这4个32位的分组级联之后生成一个128位的散列值。</p>
+<p>我们的日常开发中不会让我们从底层去做这个校验，一般芯片厂商在芯片出厂前会内置好所有的接口，我们只需要自己调用就好了！我在这里就简单介绍一下这个流程：</p>
+<ul>
+<li><p>填充：如果输入信息的长度(bit)对512求余的结果不等于448，就需要填充使得求余的结果为448，方法就是填充一个1和n个0.填充完毕之后，信息的长度就是N*512+448.</p>
+</li>
+<li><p>记录信息长度：用64位来记录信息长度，这64位加在填充的信息之后，这时的信息长度就变成了N*512+448+64 &#x3D; (N+1)*512。</p>
+</li>
+<li><p>装入标准幻数：标准幻数应该是(A&#x3D;(01234567)16,B&#x3D;(89ABCDEF)16,C&#x3D;(FEDCBA98)16,D&#x3D;(76543210)16)受大小端的影响，我们在初始化的时候一般都这样写：</p>
+</li>
+<li><p>接下来需要经过4轮循环运算：循环运算的次数是分组的个数(N+1),我们将每一个512字节细分为16个小组，每一个小组64位(8个字节)。这里有4个线性函数我们可以了解一下：</p>
+<blockquote>
+<p>F(X,Y,Z)&#x3D;(X&amp;Y)|((<del>X)&amp;Z)G(X,Y,Z)&#x3D;(X&amp;Z)|(Y&amp;(</del>Z))H(X,Y,Z)&#x3D;X^Y^ZI(X,Y,Z)&#x3D;Y^(X|(~Z))</p>
+</blockquote>
+</li>
+</ul>
+<p>以及4个散列函数，mj表示消息的第j个子分组：</p>
+<blockquote>
+<p>FF(a,b,c,d,Mj,s,ti)表示a&#x3D;b+((a+F(b,c,d)+Mj+ti)&lt;&lt;&lt;s)</p>
+<p>GG(a,b,c,d,Mj,s,ti)表示a&#x3D;b+((a+G(b,c,d)+Mj+ti)&lt;&lt;&lt;s)</p>
+<p>HH(a,b,c,d,Mj,s,ti)表示a&#x3D;b+((a+H(b,c,d)+Mj+ti)&lt;&lt;&lt;s)</p>
+<p>II(a,b,c,d,Mj,s,ti)表示a&#x3D;b+((a+I(b,c,d)+Mj+ti)&lt;&lt;&lt;s)</p>
+</blockquote>
+<p>具体的四轮运算其实就是以上几个散列函数的循环调用。具体的可以参考展锐平台的代码查看！大致的数据处理流程就是这样：</p>
+<p>MD5的应用比较广泛，涉及到文件下载过程中的一致性验证，防止文件被篡改。以及给文件产生数字指纹，通过对比文件传输前后的MD5值判断文件是否发生改更改，可以为第三方认证机构用作数字证书的生成！</p>
+<p>以上便是嵌入式中比较常用的一些数据校验方式，日常开发过程中根据客户的需求灵活选用即可！</p>
+
+      </section>
+      <section class="extra">
+        
+          <ul class="copyright">
+  
+    <li><strong>本文作者：</strong>阿光</li>
+    <li><strong>本文链接：</strong><a href="http://example.com/2022/05/10/qianrushi/index.html" title="http:&#x2F;&#x2F;example.com&#x2F;2022&#x2F;05&#x2F;10&#x2F;qianrushi&#x2F;index.html">http:&#x2F;&#x2F;example.com&#x2F;2022&#x2F;05&#x2F;10&#x2F;qianrushi&#x2F;index.html</a></li>
+    <li><strong>版权声明：</strong>本博客所有文章均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" title="BY-NC-SA" target="_blank" rel="noopener">BY-NC-SA</a> 许可协议，转载请注明出处！</li>
+  
+</ul>
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="https://pic.izhaoo.com/alipay.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+        
+  <nav class="nav">
+    <a></a>
+    <a href="/2022/05/08/hello-world/">Hello World<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B5%8C%E5%85%A5%E5%BC%8F%E7%9A%84%E5%87%A0%E7%A7%8D%E6%95%B0%E6%8D%AE%E6%A0%A1%E9%AA%8C%E6%96%B9%E5%BC%8F"><span class="toc-text">嵌入式的几种数据校验方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95"><span class="toc-text">目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E6%96%87"><span class="toc-text">正文</span></a></li></ol></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="tencent://message/?Menu=yes&uin=894519210 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#12B7F5'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconQQ "></i>
+      </a><a 
+        href="javascript:; "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconwechat-fill "></i>
+      </a><a 
+        href="https://www.instagram.com/izhaoo/ "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconinstagram "></i>
+      </a><a 
+        href="https://github.com/zhaoo "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#9f7be1'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a><a 
+        href="mailto:izhaoo@163.com "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color=#FF3B00" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconmail"></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">阿光</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+  
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
