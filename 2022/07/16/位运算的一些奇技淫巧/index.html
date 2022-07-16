@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="/images/banner.webp">
+  <title>位运算的一些奇技淫巧 | 阿光的博客</title>
+  <meta name="author" content="阿光" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="" />
+  
+  <meta name="description" content="位运算的一些奇技淫巧 位运算这种计算方式已经淡出我的编码习惯很久了，最近突然看见一篇推文在讲一些位运算在特殊场景下的奇妙作用，这显然勾起了阿光对于位运算的一泡浓厚的兴趣，于是我就搜集了一些位运算常用的技巧在这里和大家分享一下。 其实像这种技巧题目的话知道就行了，能做到遇到类似的情况会用就行，想要真的自己去发现这些东西还是有点难度的，就交给大佬们去做吧！ 位运算简介常见的位运算也就是以下6种：  |">
+<meta property="og:type" content="article">
+<meta property="og:title" content="位运算的一些奇技淫巧">
+<meta property="og:url" content="http://www.a-guang.cn/2022/07/16/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/index.html">
+<meta property="og:site_name" content="阿光的博客">
+<meta property="og:description" content="位运算的一些奇技淫巧 位运算这种计算方式已经淡出我的编码习惯很久了，最近突然看见一篇推文在讲一些位运算在特殊场景下的奇妙作用，这显然勾起了阿光对于位运算的一泡浓厚的兴趣，于是我就搜集了一些位运算常用的技巧在这里和大家分享一下。 其实像这种技巧题目的话知道就行了，能做到遇到类似的情况会用就行，想要真的自己去发现这些东西还是有点难度的，就交给大佬们去做吧！ 位运算简介常见的位运算也就是以下6种：  |">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.a-guang.cn/images/banner.webp">
+<meta property="article:published_time" content="2022-07-16T03:28:01.758Z">
+<meta property="article:modified_time" content="2022-07-16T03:29:35.926Z">
+<meta property="article:author" content="阿光">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.a-guang.cn/images/banner.webp">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" type="text/css" media="all">
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-color-dark.min.css" type="text/css" media="(prefers-color-scheme: dark)">
+    <script src="/js/kr-dark.min.js"></script>
+  
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" type="text/css" media="all">
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+  <link rel="stylesheet" id="nprogress-css" href="https://unpkg.com/nprogress@0.2.0/nprogress.css" type="text/css" media="all">
+  
+  
+  
+    <link rel="stylesheet" href="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.css">
+  
+  
+    <link rel="stylesheet" href="https://unpkg.com/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+    <script src="https://unpkg.com/qrcode_js@1.0.0/qrcode.min.js"></script>
+  
+  
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/banner.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/images/bg.webp');
+        }
+      }
+    
+  </style>
+  
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li><a href="/"><i class="fa fa-home"></i>首页</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/archives/"><i class="fa fa-file"></i>档案馆</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/friends/"><i class="fa fa-paw"></i>好伙伴</a></li>
+                                    
+                                
+                                    
+                                        <li>
+                                            <a><i class="fa fa-link"></i>链接</a>
+                                            <ul class="sub-menu">
+                                                
+                                                    
+                                                
+                                                    
+                                                        <li><a target="_blank" rel="noopener" href="https://candinya.com">作者博客</a></li>
+                                                    
+                                                
+                                                    
+                                                        <li><a target="_blank" rel="noopener" href="https://github.com/Candinya/Kratos-Rebirth">项目链接</a></li>
+                                                    
+                                                
+                                            </ul>
+                                        </li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">阿光的博客</a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>阿光的博客</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        
+
+            <section class="col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    
+    <link itemprop="mainEntityOfPage" href="http://www.a-guang.cn/2022/07/16/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/">
+    <div class="kratos-hentry kratos-post-inner clearfix">
+        <header class="kratos-entry-header">
+            
+                <h1 class="kratos-entry-title text-center" itemprop="name headline">位运算的一些奇技淫巧</h1>
+            
+            
+            <ul class="kratos-post-meta text-center">
+                <li><time datetime="2022-07-16T03:28:01.758Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-07-16</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">阿光</span>
+                </li>
+                <li>
+                    <i class="fa fa-edit"></i> 
+                    
+                    
+                        ~3.33K
+                    
+                    字
+                </li>
+                
+            </ul>
+        </header>
+        <div class="kratos-post-content">
+            <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                <div class="icon"><i class="fa fa-warning"></i></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1657942175926"></time> 前，其中的内容可能需要更新。</p></div>
+            </div>
+            
+            <hr />
+            <div itemprop="articleBody"><h1 id="位运算的一些奇技淫巧"><a href="#位运算的一些奇技淫巧" class="headerlink" title="位运算的一些奇技淫巧"></a>位运算的一些奇技淫巧</h1><hr>
+<p>位运算这种计算方式已经淡出我的编码习惯很久了，最近突然看见一篇推文在讲一些位运算在特殊场景下的奇妙作用，这显然勾起了阿光对于位运算的一泡浓厚的兴趣，于是我就搜集了一些位运算常用的技巧在这里和大家分享一下。</p>
+<p>其实像这种技巧题目的话知道就行了，能做到遇到类似的情况会用就行，想要真的自己去发现这些东西还是有点难度的，就交给大佬们去做吧！</p>
+<h2 id="位运算简介"><a href="#位运算简介" class="headerlink" title="位运算简介"></a>位运算简介</h2><p>常见的位运算也就是以下6种：</p>
+<blockquote>
+<p>| 运算：即或运算，全0则0</p>
+</blockquote>
+<blockquote>
+<p>&amp; 运算：即与运算，全1则1</p>
+</blockquote>
+<blockquote>
+<p>^ 运算：即异或运算，相同为0，不同为1</p>
+</blockquote>
+<blockquote>
+<p>~ 运算：即非运算，0为1,1为0</p>
+</blockquote>
+<blockquote>
+<p>(&lt;&lt;) 运算：左移运算，高位丢弃，低位补0</p>
+</blockquote>
+<blockquote>
+<p>(&gt;&gt;) 运算：右移运算。（无符号）低位丢弃，高位补0；（有符号）低位丢弃，高位补符号</p>
+</blockquote>
+<p>常用的就是这6种，一般解题中也完全够用了！</p>
+<h2 id="技巧介绍"><a href="#技巧介绍" class="headerlink" title="技巧介绍"></a>技巧介绍</h2><h3 id="1-位操作实现加减乘除运算"><a href="#1-位操作实现加减乘除运算" class="headerlink" title="1.位操作实现加减乘除运算"></a>1.位操作实现加减乘除运算</h3><h4 id="加法运算"><a href="#加法运算" class="headerlink" title="加法运算"></a>加法运算</h4><p>这里先从加法运算说起：</p>
+<p>我们假设</p>
+<blockquote>
+<p>a:    001010101<br>b:      000101111</p>
+</blockquote>
+<p>在无进位相加下，a^b 就可以达到相加的目的；而在只考虑进位的位的情况下，就是只考虑进位产生的值的时候，我们可以用（a&amp;b）&lt;&lt; 1,那么我们结合上面两种情况是不是可以这么想：我们将a^b的值和(a&amp;b)&lt;&lt;1的值轮番进行求 ^ 和 &amp;&lt;&lt;1 运算，直到最后&amp;&lt;&lt;1的值算为全0，这就意味着所有的进位都已经被 ^ 进结果了，那么最终的结果就是求和的值了</p>
+<p><img src="https://pic.imgdb.cn/item/62ce975bf54cd3f93705e620.jpg" alt="计算过程"></p>
+<p>我们可以看见，当最后 &amp;&lt;&lt;1 的结果为0时，说明所有的进位都已经被加到结果中去了，那么该结果也就是最终的计算结果了。</p>
+<p>这里我们用代码把它表示出来：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">add</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> sum = a;</span><br><span class="line">    <span class="keyword">while</span>(b != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      sum = a ^ b;</span><br><span class="line">      b = (a &amp; b) &lt;&lt; <span class="number">1</span>;</span><br><span class="line">      a = sum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="减法运算"><a href="#减法运算" class="headerlink" title="减法运算"></a>减法运算</h4><p>那么减法运算就很好理解了，我们可以认为a-b &#x3D; a+(-b)，这里就是要求得b的相反数，那么根据规则，一个数的相反数（补码）就等于反码加1，那么我们是不是可以这么写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">minus</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> add(a , add( ~b , <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="乘法运算"><a href="#乘法运算" class="headerlink" title="乘法运算"></a>乘法运算</h4><p>假设我们要计算 a * b,那么我们就可以写成a * 2^0 * b0 + a * 2^1 * b1 + …….+ a * 2^31 * b31,其中bi为 0 或者为 1 代表整数 b 的二进制数表达中第 i 位的值。</p>
+<p>这里我们同样举一个例子：</p>
+<blockquote>
+<p>a &#x3D; 22 &#x3D; 000010110<br>b &#x3D; 13 &#x3D; 000001101<br>res &#x3D; 0&#x3D; 000000000</p>
+</blockquote>
+<p><img src="https://files.mdnice.com/user/30550/2e29049b-29f4-418d-b351-ce48c3110a82.png" alt="计算过程"></p>
+<p>也不知道是哪一位鬼才总结出这种神奇的算法，说实话，有这个计算的功夫，我用正常的计算方法都交卷了。除了应对一些题目外，大家了解一下就好了。</p>
+<p>下面用代码描述一下上面的过程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">multi</span><span class="params">(<span class="type">int</span> &amp;a,<span class="type">int</span> &amp;b)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (b != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>((b &amp; <span class="number">1</span>) != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            res = add(res,a);</span><br><span class="line">        &#125;</span><br><span class="line">        a&lt;&lt; = <span class="number">1</span>;</span><br><span class="line">        b&gt;&gt; = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="除法运算"><a href="#除法运算" class="headerlink" title="除法运算"></a>除法运算</h4><p>这里就不过多赘述了，由于使用的很少加上思路和乘法是一样的，大家有兴趣的可以自己下来推一下。（其实是阿光不想写了）</p>
+<h3 id="交换两个整数值"><a href="#交换两个整数值" class="headerlink" title="交换两个整数值"></a>交换两个整数值</h3><p>如果有人说让你交换两个整数的值但不能额外申请第三个变量，你准备使用什么方法呢？</p>
+<p>那么你应该想到这种方法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">swap</span><span class="params">(<span class="type">int</span> &amp;a,<span class="type">int</span> &amp;b)</span></span><br><span class="line">&#123;</span><br><span class="line">    a = a ^ b;</span><br><span class="line">    b = a ^ b;</span><br><span class="line">    a = a ^ b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里解释一下：<br>首先，a &#x3D; a ^ b; 那么 b &#x3D; a ^ b &#x3D; (a ^ b) ^ b &#x3D; a,那么这里就把 a 的值成功的给了b; 第三步就是将前两步的结果带入计算： a &#x3D; (a ^ b) ^ a &#x3D; b; 交换值的目的就达到了。是不是很奇妙呢？</p>
+<h3 id="判断奇偶数"><a href="#判断奇偶数" class="headerlink" title="判断奇偶数"></a>判断奇偶数</h3><p>我觉得这个方法正是让人眼前一亮，核心思想其实就是根据数的最后一位是0还是1来做判断，那么就有：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>((a &amp; <span class="number">1</span>) == <span class="number">0</span>)&#123;</span><br><span class="line">  <span class="comment">//是个偶数</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="comment">//是个奇数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="高低位交换"><a href="#高低位交换" class="headerlink" title="高低位交换"></a>高低位交换</h3><p>这个还是比较常用的，在很多客制化的协议里面，常常涉及到高低位交换的操作。假设有一个16位无符号，将其高8位和低8位进行交换：</p>
+<blockquote>
+<p> 举个例子: 00111010 01010011….<br> 那么高低8位进行交换就得到: 01010011 00111010 这就是完全不相同的两个数了。</p>
+</blockquote>
+<p>从上面的操作我们可以看出，将无符号数 a &gt;&gt; 8 就可以将高8位转移到低8位，高位补0； 同时将a &lt;&lt; 8 就可以将低8位转移到高8位，低8位补0，然后将 a &gt;&gt; 8 和 a&lt;&lt; 8 尽行或操作就可以求得交换后的结果。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">short</span> a = <span class="number">34520</span>;</span><br><span class="line">a = (a &gt;&gt; <span class="number">8</span>) | (a &lt;&lt; <span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="统计二进制中1的个数"><a href="#统计二进制中1的个数" class="headerlink" title="统计二进制中1的个数"></a>统计二进制中1的个数</h3><p>这里巧妙的用到了一个 a &amp;&#x3D; (a-1),说一下原理：</p>
+<blockquote>
+<p>a与a-1进行运算，那么每次都可以消去一个1，那么我们搞一个计数器，当把a所有的1都消去之后，返回计数器的值就可以了，非常的方便</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span>(a)</span><br><span class="line">&#123;</span><br><span class="line">    a = a &amp; (a<span class="number">-1</span>);</span><br><span class="line">    count++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> count;</span><br></pre></td></tr></table></figure>
+
+<h3 id="在出现偶数次的数组中找出奇数次的数"><a href="#在出现偶数次的数组中找出奇数次的数" class="headerlink" title="在出现偶数次的数组中找出奇数次的数"></a>在出现偶数次的数组中找出奇数次的数</h3><p>这里我们直接看一个力扣上的题目：</p>
+<blockquote>
+<p>给定一个数组arr,其中只有一个数出现了奇数次，其他的数都是偶数次，将这个数打印出来。</p>
+</blockquote>
+<p>其实想一下这个题目可以有很多方法都能做出来，但是题目给出的要求是时间复杂度O（N）,常规方法遍历一遍能找出来吗？我是没有想到什么好方法，这里提供一种位运算的思路：</p>
+<blockquote>
+<p>整数n与0异或的结果是 n,整数n与整数n异或的结果是0. 我们申请一个整形变量 A0赋值为0 ,将A0与arr中的每一个数求异或，那么最后留下来的那个数就是只出现过一次的数，可以揣摩一下。</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">getjishunum</span><span class="params">(<span class="type">int</span> *arr)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> A0 = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>;i &lt; arr.length; i++)</span><br><span class="line">        A0 ^= arr[i];</span><br><span class="line">    <span class="keyword">return</span> A0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="大小写转换"><a href="#大小写转换" class="headerlink" title="大小写转换"></a>大小写转换</h3><p>除了上面的妙用以外，利用或运算|和空格将英文字符转化为小写</p>
+<blockquote>
+<p>(‘a’ | ‘ ‘) &#x3D; ‘a’<br>(‘A’ | ‘ ‘) &#x3D; ‘a’       </p>
+</blockquote>
+<p>利用与运算 &amp; 和下划线将英文字符转化为大写</p>
+<blockquote>
+<p>( ‘b’ &amp; ‘ _ ‘) &#x3D; ‘B’<br>( ‘B’ &amp; ‘ _ ‘) &#x3D; ‘B’  </p>
+</blockquote>
+<p>利用异或操作 ^ 和空格进行英文字符大小写互换</p>
+<blockquote>
+<p>(‘d’ ^ ‘ ‘) &#x3D; ‘D’<br>(‘D’ ^ ‘ ‘) &#x3D; ‘d’</p>
+</blockquote>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <h5 itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</h5>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+                <div class="post-like-donate text-center clearfix" id="post-like-donate">
+                
+                
+                    <a class="share" href="javascript:;"><i class="fa fa-share-alt"></i> 分享</a>
+                    <div class="share-wrap" style="display: none;">
+    <div class="share-group">
+        <a href="javascript:;" class="share-plain qq" onclick="share('qq');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-qq"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain qzone" onclick="share('qzone');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-star"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weixin pop style-plain" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weixin"></i>
+            </div>
+            <div class="share-int">
+                <div class="qrcode" id="wechat-qr"></div>
+                <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weibo" onclick="share('weibo');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weibo"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain facebook style-plain" onclick="share('facebook');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-facebook"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain twitter style-plain" onclick="share('twitter');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-twitter"></i>
+            </div>
+        </a>
+    </div>
+    <script type="text/javascript">
+        $(()=>{
+            new QRCode("wechat-qr", {
+                text: "http://www.a-guang.cn/2022/07/16/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/",
+                width: 150,
+                height: 150,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+        function share(dest) {
+            const qqBase        = "https://connect.qq.com/widget/shareqq/index.html?";
+            const weiboBase     = "https://service.weibo.com/share/share.php?";
+            const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
+            const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
+            const twitterBase   = "https://twitter.com/intent/tweet?";
+            const hostUrl       = "http://www.a-guang.cn/2022/07/16/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/";
+            const title         = "「位运算的一些奇技淫巧」";
+            const excerpt       = `位运算的一些奇技淫巧
+位运算这种计算方式已经淡出我的编码习惯很久了，最近突然看见一篇推文在讲一些位运算在特殊场景下的奇妙作用，这显然勾起了阿光对于位运算的一泡浓厚的兴趣，于是我就搜集了一些位运算常用的技巧在这里和大家分享一下。
+其实像...`;
+            let _URL;
+            switch (dest) {
+                case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
+                case "weibo"    : _URL = weiboBase+"url="+hostUrl+"&title="+title+excerpt;                                 break;
+                case "qzone"    : _URL = qzoneBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";  break;
+                case "facebook" : _URL = facebookBase+"u="+hostUrl;                                                        break;
+                case "twitter"  : _URL = twitterBase+"text="+title+excerpt+"&url="+hostUrl;                                break;
+            }
+            window.open(_URL);
+        };
+    </script>
+</div>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    
+                </div>
+                <div class="pull-date">
+                    <time datetime="2022-07-16T03:29:35.926Z" itemprop="dateModified">最后编辑：2022-07-16</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" 嵌入式的几种数据校验方式" href="/2022/05/10/qianrushi/">&lt; 上一篇</a>
+            </div>
+            
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+        
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/avatar.webp" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center"></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                3
+            </span>
+        </a>
+        <a class="meta-item" href="/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                0
+            </span>
+        </a>
+        <a class="meta-item" href="/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                0
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                
+
+            
+                
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2022/07/16/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"><i class="fa  fa-book"></i> 位运算的一些奇技淫巧</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2022/05/10/qianrushi/"><i class="fa  fa-book"></i> 嵌入式的几种数据校验方式</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2022/05/08/hello-world/"><i class="fa  fa-book"></i> Hello World</a>
+            
+          
+        
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://t.me/CandyUnion"><i class="fa fa-telegram"></i></a></li>
+                        
+                        
+                        
+                        <li><a target="_blank" rel="me" href="https://nya.one/@Candinya"><i class="fa fa fa-share-alt-square"></i></a></li>
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/Candinya"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2022 阿光的博客 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by 阿光.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="https://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://unpkg.com/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+<script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/";
+</script>
+
+
+    <script async src="/js/candy.min.js"></script>
+
+
+
+    <script defer src="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://unpkg.com/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="3204190542"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://unpkg.com/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://unpkg.com/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
