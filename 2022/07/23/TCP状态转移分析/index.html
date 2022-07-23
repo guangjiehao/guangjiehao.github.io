@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="/images/aguang.png">
-  <title>Hello World | 阿光的博客</title>
+  <title>阿光的博客</title>
   <meta name="author" content="阿光" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -15,16 +15,16 @@
   
     <meta name="keywords" content="" />
   
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+  <meta name="description" content="TCP协议C&#x2F;S模型总结(状态转移篇) 花女士曾经说过:“离家太远会忘记故乡，…..”,长时间在应用层面去做需求就会开始忽视掉一些最底层的知识和逻辑，一些自以为很简单的东西可能往往都只是浮于表面，最近开始回顾和提炼一些重要的东西，加深印象的同时希望能了解到一些新的东西吧！ 状态转移图 这里我们对TCP的11个状态进行一一分析： CLOSED :   整个流程图的起始状态和终结状态，在超时">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://www.a-guang.cn/2022/05/08/hello-world/index.html">
+<meta property="og:title" content="阿光的博客">
+<meta property="og:url" content="http://www.a-guang.cn/2022/07/23/TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="阿光的博客">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="TCP协议C&#x2F;S模型总结(状态转移篇) 花女士曾经说过:“离家太远会忘记故乡，…..”,长时间在应用层面去做需求就会开始忽视掉一些最底层的知识和逻辑，一些自以为很简单的东西可能往往都只是浮于表面，最近开始回顾和提炼一些重要的东西，加深印象的同时希望能了解到一些新的东西吧！ 状态转移图 这里我们对TCP的11个状态进行一一分析： CLOSED :   整个流程图的起始状态和终结状态，在超时">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.a-guang.cn/images/aguang.png">
-<meta property="article:published_time" content="2022-05-08T04:46:45.944Z">
-<meta property="article:modified_time" content="2022-05-08T11:58:02.179Z">
+<meta property="article:published_time" content="2022-07-23T13:12:30.388Z">
+<meta property="article:modified_time" content="2022-07-23T13:11:37.162Z">
 <meta property="article:author" content="阿光">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://www.a-guang.cn/images/aguang.png">
@@ -153,15 +153,13 @@
 
             <article itemscope itemtype="https://schema.org/Article">
     
-    <link itemprop="mainEntityOfPage" href="http://www.a-guang.cn/2022/05/08/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://www.a-guang.cn/2022/07/23/TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%88%86%E6%9E%90/">
     <div class="kratos-hentry kratos-post-inner clearfix">
         <header class="kratos-entry-header">
             
-                <h1 class="kratos-entry-title text-center" itemprop="name headline">Hello World</h1>
-            
             
             <ul class="kratos-post-meta text-center">
-                <li><time datetime="2022-05-08T04:46:45.944Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-05-08</time></li>
+                <li><time datetime="2022-07-23T13:12:30.388Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-07-23</time></li>
                 <li itemprop="author" itemscope itemtype="https://schema.org/Person">
                     <i class="fa fa-user"></i> 作者 <span itemprop="name">阿光</span>
                 </li>
@@ -169,7 +167,7 @@
                     <i class="fa fa-edit"></i> 
                     
                     
-                        461
+                        ~3.81K
                     
                     字
                 </li>
@@ -179,22 +177,173 @@
         <div class="kratos-post-content">
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1652011082179"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1658581897162"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             <hr />
-            <div itemprop="articleBody"><p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>$ 我的名字郝光杰，请多多关照！！！<br>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+            <div itemprop="articleBody"><h1 id="TCP协议C-x2F-S模型总结-状态转移篇"><a href="#TCP协议C-x2F-S模型总结-状态转移篇" class="headerlink" title="TCP协议C&#x2F;S模型总结(状态转移篇)"></a>TCP协议C&#x2F;S模型总结(状态转移篇)</h1><hr>
+<p>花女士曾经说过:“离家太远会忘记故乡，…..”,长时间在应用层面去做需求就会开始忽视掉一些最底层的知识和逻辑，一些自以为很简单的东西可能往往都只是浮于表面，最近开始回顾和提炼一些重要的东西，加深印象的同时希望能了解到一些新的东西吧！</p>
+<h2 id="状态转移图"><a href="#状态转移图" class="headerlink" title="状态转移图"></a>状态转移图</h2><p><img src="https://files.mdnice.com/user/30550/6f4ecbe8-d1dd-4c29-a5ed-d5d7a84f4185.png" alt="状态转移图"></p>
+<p><strong>这里我们对TCP的11个状态进行一一分析：</strong></p>
+<p><strong>CLOSED :</strong></p>
+<blockquote>
+<blockquote>
+<p>整个流程图的起始状态和终结状态，在超时或者连接关闭的时候才会进入该状态。即TIME_WAIE状态等待2MSL后或者SYN_SENT超时，又或者服务器被动关闭后会该状态。</p>
+</blockquote>
+</blockquote>
+<p><strong>SYN_SENT :</strong></p>
+<blockquote>
+<blockquote>
+<p>客户端发起第一次握手后，客户端处于该状态；即第一个SYN发出后，客户端的状态由CLOSED状态转换到SYN_SENT状态。这里会等待服务器响应[SYN ACK]报文后，向服务器发送ACK报文，此时客户端状态由SYN状态转移到ESTABLISHED状态。如果等待超时，则连接建立失败，SYN_SENT状态直接转移为CLOSED状态。</p>
+</blockquote>
+</blockquote>
+<p><strong>ESTABLISHED:</strong></p>
+<blockquote>
+<blockquote>
+<p>客户端进入该状态后表明已经准备好做数据收发业务了。上面说到客户端在发出第三次握手信息后立即进入ESTABLISHDED状态，而服务器要在接收到这一包ACK之后才会从SYN_RECV状态进入到ESTABLISHED状态</p>
+</blockquote>
+</blockquote>
+<p><strong>LISTEN:</strong></p>
+<blockquote>
+<blockquote>
+<p>这里指的是服务器等待连接的状态。服务器经过socket,bind,listen这些函数之后就进入了该状态。开始监听客户端发送过来的连接请求。即服务器在接受到客户端发送过来第一个SYN后并向客户端发送[SYN ACK]报文后状态转移到SYN_RECV状态。</p>
+</blockquote>
+</blockquote>
+<p><strong>SYN_RCVD:</strong></p>
+<blockquote>
+<blockquote>
+<p>状态图中还描述了一种情况，<strong>当客户端在发送SYN的同时也收到服务器端的SYN的请求，即两个同时发起请求，那么客户端就会从SYN_SENT状态转化到SYN_REVD状态。</strong></p>
+</blockquote>
+</blockquote>
+<p><strong>FIN_WAIT_1:</strong></p>
+<blockquote>
+<blockquote>
+<p>主动关闭的一方做完数据业务后，准备终止连接，在发送第一个FIN之后进入FIN_WAIT1状态等待对端的ACK,也就是所谓的第一次挥手。</p>
+</blockquote>
+</blockquote>
+<p><strong>FIN_WAIT_2:</strong></p>
+<blockquote>
+<blockquote>
+<p>主动发起断开的一方在接受到对端的ACK（第二次握手信息）之后，进入到FIN_WAIT2状态。</p>
+</blockquote>
+</blockquote>
+<p><strong>CLOSING:</strong></p>
+<blockquote>
+<blockquote>
+<p>主动方发送完FIN后就进入了FIN_WAIT1状态等待ACK，但是却没有等来ACK,反而等来了被动方的FIN报文，这说明被动方也发起了主动关闭请求，主动方回复ACK后，进入CLOSIONG的状态。</p>
+</blockquote>
+</blockquote>
+<p><strong>TIME_WAIT:</strong></p>
+<blockquote>
+<blockquote>
+<p>从上面的额状态转移图可以看出，TIME_WAIT状态是四次挥手操作最后都会经过的状态，我们分别从三个转移过程分别描述：</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>由CLOSING状态进入TIME_WAIT状态</li>
+</ul>
+<blockquote>
+<blockquote>
+<p>也就是主被动双方同时发起关闭的状态下，当主动方接受到ACK后，进入到这个状态</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>由FIN_WAIT1进入TIME_WAIT状态</li>
+</ul>
+<blockquote>
+<blockquote>
+<p>主动方在FIN_WAIT1状态下，正好被动方也发起了关闭请求，发送了FIN，这时客户端接到到了先前的ACK,也收到了对方的FIN,然后状态就由FIN_WAIT1转移到TIME_WAIT状态，然后发送ACK给对方。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li>由FIN_WAIT2状态进入TIME_WAIT状态</li>
+</ul>
+<p>这个就是一般情况，主动方在完成自身发起的主动关闭连接请求后，接收到对面的FIN,回复ACK后，状态发生转移。</p>
+<blockquote>
+<blockquote>
+<p>总结一下：</p>
+<p>section 1：<strong>主动方发送FIN请求关闭连接，这个时候FIN还没有到被动方，被动方此时也想着要关闭连接，也发了一个FIN报文</strong></p>
+<p><img src="https://files.mdnice.com/user/30550/66de5cd0-3574-41e3-9de7-b9af1f1ab77e.png" alt="section 1"></p>
+<p>section 2：<strong>主动方发送FIN给被动方后，被动方发现没有数据要传输了，这时就将FIN和ACK报文合成一包发给主动方，这时FIN_WAIT1就直接转移到TIME_WAIT状态了</strong></p>
+<p><img src="https://files.mdnice.com/user/30550/049db756-df64-4d56-a4a0-80b65364da1c.png" alt="section 2"></p>
+<p>section 3：<strong>也就是最正常的一种情况，主动方发起FIN,被动方此时还在传输数据，收到FIN先回复一个ACK,这时主动方状态转移到FIN_WAIT2,等被动方数据传输完毕，发送FIN报文到主动方，主动方回ACK并进入TIME状态</strong></p>
+<p><img src="https://files.mdnice.com/user/30550/38f8c45d-2612-4267-9e6b-bf9092f018cb.png" alt="section 3"></p>
+</blockquote>
+</blockquote>
+<p><strong>CLOSE_WAIT:</strong></p>
+<blockquote>
+<blockquote>
+<p>服务器接收到FIN后，发送ACK给客户端并进入该状态。我们可以理解为被动关闭的一方此时正在等待上层应用发出关闭连接的指令。上层处理完数据调用close关闭连接，这个时候服务器发送FIN.然后进入LAST_ACK状态。</p>
+</blockquote>
+</blockquote>
+<p><strong>LAST_ACK:</strong></p>
+<blockquote>
+<blockquote>
+<p>被动方发起关闭请求后，即发送FIN后，就进入该状态。收到客户端返回的ACK后返回到CLOSED状态度。</p>
+</blockquote>
+</blockquote>
+<p>以上便是TCP状态转移的所有过程。</p>
+<h2 id="经典问题复现"><a href="#经典问题复现" class="headerlink" title="经典问题复现"></a>经典问题复现</h2><h3 id="Question-1"><a href="#Question-1" class="headerlink" title="Question 1"></a>Question 1</h3><blockquote>
+<blockquote>
+<p><strong>问： TIME_WAIT为什么需要等待2MSL才能变为CLOSED状态？什么是MSL?如果不想等怎么办？</strong></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>答</strong>：<br>1.MSL:Maximum Segment Lifetime指的是报文段在网络中的最大生存时间，任何报文段在网络中存在超过这个时间都将会被丢弃，在linux下该值被定义为30s,在RTOS下被定义为60s.                                              </p>
+</blockquote>
+<blockquote>
+<p>2.TIME_WAIT状态：说白了就是等待足够久的时间，一方面让网络上延迟未达到的数据可以自然消失，即被网络丢弃，那么再出现在这条链路上的数据一定是新连接生成的；另一方面就是等待最后一个ACK可以被被动方接受，确保连接正确关闭。             </p>
+</blockquote>
+<blockquote>
+<p>3.如果我们不想等2MSL怎么办呢？有两个方法：方法一：设置地址和端口重用，我们配置开启socket的属性SO_REUSEPORT和SO_REUSEADDR，这个时候模组做服务器就会在TIME_WAIT阶段可以继续使用原地址端口建立新连接；方法二：设置该socket的可选参数LINGER来帮助我们在连接close后等待可选时间发送RST强制断开连接即可，但这有风险，可能导致网络中未传输完毕的数据丢失。</p>
+</blockquote>
+<h3 id="Question-2"><a href="#Question-2" class="headerlink" title="Question 2"></a>Question 2</h3><blockquote>
+<blockquote>
+<p><strong>问：SYN_SENT如果等待超时会回到CLOSED状态，判定超时的依据是什么？</strong></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>答：</strong><br>1.RTT:数据从网络一端传输出去到接收确认所需要的的时间；RTO:重传超时时间，即超过这个时间还没有接收到确认包，就需要发起重传了。</p>
+</blockquote>
+<blockquote>
+<p>2.客户端状态SYN_SENT需要接受服务器的确认和SYN来发生状态转换，但是由于网络原因，该SYN没有被服务器收到或者模块没收到服务器数据，就会开启重传定时器，等待RTO之后重新发送SYN报文，注意RTO的时间不是固定的，它会随着重传的次数翻倍，达到次数后还没有收到服务器的[SYN ACK],那么该状态结束返回到CLOSED状态。</p>
+</blockquote>
+<blockquote>
+<p>3.Linux下握手信息默认重传5次，报文重传次数默认15次，LWIP中默认重传次数为7次</p>
+</blockquote>
+<h3 id="Question-3"><a href="#Question-3" class="headerlink" title="Question 3"></a>Question 3</h3><blockquote>
+<blockquote>
+<p><strong>问：请简述一下为什么需要三次握手和四次挥手？</strong></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>答：</strong><br>1.在RFC 793中对于三次握手的说明大概是：用于保证可靠性和流量控制的某些状态信息：包括socket(包含IP和端口信息)；sequence number(用于保证可靠传输);window sizes(用于流量控制)</p>
+</blockquote>
+<blockquote>
+<p>2.那么我们这里给出必须三次握手的原因：1).一个四元组确定一个唯一的连接，那么只有三次握手就可以让客户端有足够的的上下文来判断当前连接是否是历史连接，防止将历史连接初始化。2).序列号保证可靠传输，只有三次握手才能让通信双方正确交换保存序列号，达到可靠通信。</p>
+</blockquote>
+<blockquote>
+<p>3.至于4次挥手 的原因就比较简单了：我们参考三次握手，那么至少也需要三次挥手，但是三次挥手不能解决网络中遗留的数据问题，即客户端收到ACK之后还需要等待服务器数据传输完毕之后发送FIN，那么就是将第二次过程拆分开来看，一句话就是为了保证网络中的数据都可以得到妥善处理后再关闭。</p>
+</blockquote>
+<h3 id="Question-4"><a href="#Question-4" class="headerlink" title="Question 4"></a>Question 4</h3><blockquote>
+<blockquote>
+<p><strong>问：如果三次握手或者四次挥手过程中的任何一包丢掉了，接下来会怎么样？</strong></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>答：</strong><br>1.同样先从三次握手说起：假如第一包握手信息丢失，此时客户端已经进入SYN_SENT状态，一个RTO内没有收到第二包握手信息就触发重传，5次重传后还没有收到则状态由SYN_SENT转移到CLOSED</p>
+</blockquote>
+<blockquote>
+<p>2.假如第二包握手信息丢失：服务器此时已经进入SYN_RECVED状态，发送[SYN ACK]给客户端，报文丢失后会客户端没有收到确认触发第一次握手信息重传，同时服务器没有收到第三次握手信息触发第二包握手信息重传。同样在5次重传后状态转移为CLOSED。</p>
+</blockquote>
+<blockquote>
+<p>3.假如第三包握手信息丢失：这个状态就比较特殊了，我们知道客户端在发送完第三包ACK之后就进入了ESTABLISH状态了，但这个时候服务器在等待这包ACK,没等到第三包握手即触发第二包重传，重传失败后发送RST断开连接。但是这期间客户端可是处于连接态的，客户端向服务器发送数据，由于全连接没有真正建立，数据就会进入不断重传的情况，直到到达数据最大重传次数后结束连接状态，由ESTABLISH转移到CLOSED状态。</p>
+</blockquote>
+<blockquote>
+<p>4.至于4次挥手丢包情况可以参照三次握手分析，绕不过重传和状态转移。</p>
+</blockquote>
+<hr>
+<p>今天就说到这吧！打游戏去！ </p>
 </div>
         </div>
         
@@ -248,7 +397,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://www.a-guang.cn/2022/05/08/hello-world/",
+                text: "http://www.a-guang.cn/2022/07/23/TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%88%86%E6%9E%90/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -260,9 +409,10 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://www.a-guang.cn/2022/05/08/hello-world/";
-            const title         = "「Hello World」";
-            const excerpt       = `Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using ...`;
+            const hostUrl       = "http://www.a-guang.cn/2022/07/23/TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%88%86%E6%9E%90/";
+            const title         = "「」";
+            const excerpt       = `TCP协议C&#x2F;S模型总结(状态转移篇)
+花女士曾经说过:“离家太远会忘记故乡，…..”,长时间在应用层面去做需求就会开始忽视掉一些最底层的知识和逻辑，一些自以为很简单的东西可能往往都只是浮于表面，最近开始回顾和提炼一些重要的...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -284,7 +434,7 @@
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2022-05-08T11:58:02.179Z" itemprop="dateModified">最后编辑：2022-05-08</time>
+                    <time datetime="2022-07-23T13:11:37.162Z" itemprop="dateModified">最后编辑：2022-07-23</time>
                 </div>
             </div>
         </footer>
@@ -292,10 +442,10 @@
     
         <nav class="navigation post-navigation clearfix" role="navigation">
             
-            
-            <div class="nav-next clearfix">
-                <a title=" 嵌入式的几种数据校验方式" href="/2022/05/10/qianrushi/">下一篇 &gt;</a>
+            <div class="nav-previous clearfix">
+                <a title=" 位运算的一些奇技淫巧" href="/2022/07/16/位运算的一些奇技淫巧/">&lt; 上一篇</a>
             </div>
+            
             
         </nav>
     
@@ -369,6 +519,9 @@
         
           
           
+        
+          
+          
             <a class="list-group-item" href="/2022/07/16/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"><i class="fa  fa-book"></i> 位运算的一些奇技淫巧</a>
             
           
@@ -376,12 +529,6 @@
           
           
             <a class="list-group-item" href="/2022/05/10/qianrushi/"><i class="fa  fa-book"></i> 嵌入式的几种数据校验方式</a>
-            
-          
-        
-          
-          
-            <a class="list-group-item" href="/2022/05/08/hello-world/"><i class="fa  fa-book"></i> Hello World</a>
             
           
         
