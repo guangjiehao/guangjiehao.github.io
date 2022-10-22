@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="/images/aguang.png">
+  <title>ntytcp协议栈(零拷贝&柔性数组) | 阿光的博客</title>
+  <meta name="author" content="阿光" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="" />
+  
+  <meta name="description" content="ntytcp协议栈（零拷贝&amp;柔性数组）前言最近阿光在阅读一些优秀前辈的源码时，了解到了一套国产化的tcp&#x2F;ip协议栈—ntytcp协议栈，该协议栈由G站ID: wangbojing 先生开源。它是一套单线程用户态协议栈，使用epoll实现高并发,据说可以达到C10K的性能，不知道是真是假，抱着学习的态度，我们来了解一下它高性能的原因之一：零拷贝技术。以及介绍一种网络协议栈中常用的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ntytcp协议栈(零拷贝&amp;柔性数组)">
+<meta property="og:url" content="http://www.a-guang.cn/2022/10/22/ntytcp%E5%8D%8F%E8%AE%AE%E6%A0%88(%E9%9B%B6%E6%8B%B7%E8%B4%9D&%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84)/index.html">
+<meta property="og:site_name" content="阿光的博客">
+<meta property="og:description" content="ntytcp协议栈（零拷贝&amp;柔性数组）前言最近阿光在阅读一些优秀前辈的源码时，了解到了一套国产化的tcp&#x2F;ip协议栈—ntytcp协议栈，该协议栈由G站ID: wangbojing 先生开源。它是一套单线程用户态协议栈，使用epoll实现高并发,据说可以达到C10K的性能，不知道是真是假，抱着学习的态度，我们来了解一下它高性能的原因之一：零拷贝技术。以及介绍一种网络协议栈中常用的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.a-guang.cn/images/aguang.png">
+<meta property="article:published_time" content="2022-10-22T07:42:19.143Z">
+<meta property="article:modified_time" content="2022-10-22T07:45:46.523Z">
+<meta property="article:author" content="阿光">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.a-guang.cn/images/aguang.png">
+  
+  <!-- 站点验证相关 -->
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" type="text/css" media="all">
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-color-dark.min.css" type="text/css" media="(prefers-color-scheme: dark)">
+    <script src="/js/kr-dark.min.js"></script>
+  
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" type="text/css" media="all">
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+  <link rel="stylesheet" id="nprogress-css" href="https://unpkg.com/nprogress@0.2.0/nprogress.css" type="text/css" media="all">
+  
+  
+  
+    <link rel="stylesheet" href="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.css">
+  
+  
+    <link rel="stylesheet" href="https://unpkg.com/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="https://unpkg.com/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+    <script src="https://unpkg.com/qrcode_js@1.0.0/qrcode.min.js"></script>
+  
+  
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/banner.webp');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/images/bg.webp');
+        }
+      }
+    
+  </style>
+  
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li><a href="/"><i class="fa fa-home"></i>首页</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/archives/"><i class="fa fa-file"></i>档案馆</a></li>
+                                    
+                                
+                                    
+                                        <li>
+                                            <a><i class="fa fa-link"></i>链接</a>
+                                            <ul class="sub-menu">
+                                                
+                                                    
+                                                
+                                                    
+                                                        <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Ruyehhhh?spm=1000.2115.3001.5343">阿光的CSDN</a></li>
+                                                    
+                                                
+                                                    
+                                                        <li><a target="_blank" rel="noopener" href="https://pic.imgdb.cn/item/62dbfa45f54cd3f9378483f0.png">微信公众号</a></li>
+                                                    
+                                                
+                                            </ul>
+                                        </li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">阿光的博客</a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>阿光的博客</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        
+
+            <section class="col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    
+    <link itemprop="mainEntityOfPage" href="http://www.a-guang.cn/2022/10/22/ntytcp%E5%8D%8F%E8%AE%AE%E6%A0%88(%E9%9B%B6%E6%8B%B7%E8%B4%9D&amp;%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84)/">
+    <div class="kratos-hentry kratos-post-inner clearfix">
+        <header class="kratos-entry-header">
+            
+                <h1 class="kratos-entry-title text-center" itemprop="name headline">ntytcp协议栈(零拷贝&柔性数组)</h1>
+            
+            
+            <ul class="kratos-post-meta text-center">
+                <li><time datetime="2022-10-22T07:42:19.143Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-10-22</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> 作者 <span itemprop="name">阿光</span>
+                </li>
+                <li>
+                    <i class="fa fa-edit"></i> 
+                    
+                    
+                        ~4.72K
+                    
+                    字
+                </li>
+                
+            </ul>
+        </header>
+        <div class="kratos-post-content">
+            <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                <div class="icon"><i class="fa fa-warning"></i></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1666424746523"></time> 前，其中的内容可能需要更新。</p></div>
+            </div>
+            
+            <hr />
+            <div itemprop="articleBody"><h1 id="ntytcp协议栈（零拷贝-amp-柔性数组）"><a href="#ntytcp协议栈（零拷贝-amp-柔性数组）" class="headerlink" title="ntytcp协议栈（零拷贝&amp;柔性数组）"></a>ntytcp协议栈（零拷贝&amp;柔性数组）</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近阿光在阅读一些优秀前辈的源码时，了解到了一套国产化的tcp&#x2F;ip协议栈—ntytcp协议栈，该协议栈由G站ID: wangbojing 先生开源。它是一套单线程用户态协议栈，使用epoll实现高并发,据说可以达到C10K的性能，不知道是真是假，抱着学习的态度，我们来了解一下它高性能的原因之一：零拷贝技术。以及介绍一种网络协议栈中常用的柔性数组。</p>
+<h2 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a>零拷贝</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>我们以linux操作系统的标准I&#x2F;O接口是基于数据拷贝操作的。I&#x2F;O操作会导致数据在内核空间和用户空间之间进行传输。这样做可以减少磁盘I&#x2F;O操作。但是存在的一个问题就是频繁的数据拷贝会有很大的CPU开销，限制导致操作系统传输数据效率比较的低下，尤其是在并发量很大的情况下，低下的数据传输效率将导致很大的系统性延时，造成性能降低。</p>
+<p>零拷贝技术在并发量越来越大的情况下应运而生，他完美的解决了高并发下数据传输效率的问题。在某种程度上减少甚至避免了不必要的CPU数据拷贝的操作。</p>
+<h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>它是一种避免CPU进行数据拷贝的技术，可以减少用户空间和内核空间之间由于上下文切换而带来的开销；数据拷贝是一件简单而机械的任务，CPU一直被占用着去做数据拷贝是一件很浪费资源的事情。那么零拷贝技术的目标可以概括如下：</p>
+<p><strong>1.避免数据拷贝</strong></p>
+<blockquote>
+<p>避免内核缓冲区之间的数据拷贝</p>
+</blockquote>
+<blockquote>
+<p>避免内核空间与用户空间之间的内存拷贝</p>
+</blockquote>
+<blockquote>
+<p>用户程序可以避开操作系统直接访问硬件外设</p>
+</blockquote>
+<blockquote>
+<p>数据传输尽量让DMA来做</p>
+</blockquote>
+<p><strong>2.综合目标</strong></p>
+<blockquote>
+<p>避免不必要的系统调用和上下文切换</p>
+</blockquote>
+<blockquote>
+<p>需要拷贝到的数据可以先缓存起来</p>
+</blockquote>
+<blockquote>
+<p>数据处理尽量交给硬件来做</p>
+</blockquote>
+<p>我们来看一个传统的IO执行的流程：对于服务器来说我们下载的过程即将主机磁盘文件通过已经连接的socket发出去：核心代码如下：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">while((<span class="name">n</span> = read(<span class="name">diskfd</span>, buf, BUF_SIZE)) &gt; <span class="number">0</span>)</span><br><span class="line">    write(<span class="name">sockfd</span>, buf , n)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
+<p>传统的IO流程包括read和write的过程</p>
+<p>大致的流程如下：</p>
+<p><img src="https://files.mdnice.com/user/30550/116e6b0e-8b63-4bf9-8cdc-8825b5f7401b.png"></p>
+<blockquote>
+<p>1.应用程序调用read函数，向操作系统发起IO调用，上下文从用户态切换到内核态。</p>
+</blockquote>
+<blockquote>
+<p>2.DMA控制器把数据从磁盘读取到内核缓冲区</p>
+</blockquote>
+<blockquote>
+<p>3.CPU把内核缓冲区数据拷贝到用户应用缓冲区，上下文从内核态切换到用户态，这个时候read函数返回</p>
+</blockquote>
+<blockquote>
+<p>4.用户应用程序通过write函数，发起IO调用，上下文从用户态切换到内核态</p>
+</blockquote>
+<blockquote>
+<p>5.CPU将缓冲区的数据拷贝到SOCKET缓冲区</p>
+</blockquote>
+<blockquote>
+<p>6.DMA控制器将数据从socket拷贝到网卡设备，上下文从内核态切换到用户态，write返回。</p>
+</blockquote>
+<p>从上面可以看出，传统的IO流程包括了4次上下文的切换，4次数据拷贝</p>
+<p>其中<strong>内核空间</strong>主要提供进程调度，内存分配，连接硬件资源等功能；<strong>用户空间</strong>，提供给各个程序进程的空间，它不具有访问内核空间资源的权限，可以通过系统调用来完成用户空间的切换。</p>
+<p><strong>CPU上下文</strong>：CPU寄存器，是CPU内置的容量小，但速度极快的内存。而程序计数器，则是用来查询CPU正在执行的指令位置，或者即将执行的下一条指令的位置。他们都是CPU在运行任何任务之前，必须要依赖的环境，因此叫做CPU上下文。</p>
+<h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>在现代操作系统中，虚拟内存取代了物理地址，关于虚拟内存的内容阿光在之前的章节里面也有提到过，使用虚拟内存有如下两个好处：</p>
+<p>1.虚拟内存空间远大于物理地址空间</p>
+<p>2.多个虚拟内存可以指向同一物理地址</p>
+<p>那么正是由于这种机制使得0拷贝的实现有了可能：</p>
+<p><img src="https://files.mdnice.com/user/30550/304d8eef-6aa0-4e54-9892-728c4ece2c00.png"></p>
+<h3 id="DMA技术"><a href="#DMA技术" class="headerlink" title="DMA技术"></a>DMA技术</h3><p>DMA即直接内存访问，他允许外部设备和内存直接进行IO数据传输，这个过程不需要CPU的参与</p>
+<p>简单的说他就是帮助CPU转发一下IO请求以及拷贝数据。这时候CPU资源就能被释放出来去做别的事情，提高CPU的利用效率。下面我们通过一张图来看下DMA都做了那些工作：</p>
+<p><img src="https://files.mdnice.com/user/30550/1b1d3c4c-481e-49d7-a039-a07df9adf7fc.png" alt="DMA"></p>
+<p>可以从上图看出来DMA方式区别于中断方式，直接绕过CPU请求将数据拷贝到主存，减少CPU资源消耗，硬件效率可以大大提高！</p>
+<h3 id="方式"><a href="#方式" class="headerlink" title="方式"></a>方式</h3><p>那么很明显我们要继续优化上述流程的话，只需要做到两点即可：</p>
+<ul>
+<li>1.减少CPU上下文切换的次数</li>
+<li>2.减少内存拷贝次数</li>
+</ul>
+<p>零拷贝技术主要有以下两种实现方式：</p>
+<blockquote>
+<p> <strong>mmap+write方式</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>senndfile方式</strong></p>
+</blockquote>
+<h4 id="mmap-write"><a href="#mmap-write" class="headerlink" title="mmap+write"></a>mmap+write</h4><p><code>mmap</code> 即 memeoy map 内存映射机制，我们使用<code>mmap()</code>来代替前面IO流程中的<code>read()</code>,<code>mmap()</code>会将内核缓冲区的数据直接映射到用户空间，该过程由DMA完成，在调用write()将数据搬运到socket缓冲区，最后socket将数据交付给网卡，整个过程减少了一次由内核到用户态的数据拷贝。</p>
+<h4 id="存在问题及解决方案"><a href="#存在问题及解决方案" class="headerlink" title="存在问题及解决方案"></a>存在问题及解决方案</h4><p>需要注意的是，在多线程模式下，如果我们mmap了一个文件，但这个时候文件被另一个线程处理或者截断了，那么我们调用write的时候就会因为访问非法地址而导致进程被CPU杀死，导致程序崩溃！所以这就告诉我们在对mmap的文件进行操作的时候一定要加上一个锁！在操作完之后再解锁。</p>
+<p>加锁的操作可以保证当前进程被CPU杀死之前由一个信号通知当前进程将<code>write()</code>返回当前写入的长度，将erron返回SUCC</p>
+<h4 id="sendfile"><a href="#sendfile" class="headerlink" title="sendfile"></a>sendfile</h4><p>Linux从2.1内核版本开始就支持一个用于传输文件的系统调用接口sendfile(),该系统调用可以替代read()和write()完成一次系统调用；另外，该系统调用可以直接将内核缓冲区的数据拷贝到socket缓冲区，减少了中间用户态的一次拷贝。通过以上sendfile()就减少了整个过程中2次数据拷贝和3次的CPU上下文切换，但这些也没有实现真正意义上的0拷贝。</p>
+<p>随着版本的迭代，在Linux 2.4内核版本到来的时候，sendfile()过程发生了如下的变化：</p>
+<blockquote>
+<p>通过DMA将磁盘数据直接拷贝到内核缓冲区中</p>
+</blockquote>
+<blockquote>
+<p>只将缓冲区描述符和长度拷贝到socket缓冲区，而缓冲区数据可以通过网卡的SG-DMA控制器直接拷贝到网卡缓冲区中，这样就又减少了一次数据拷贝。</p>
+</blockquote>
+<p>该过程中全程没有CPU参与数据拷贝，都是有DMA完成，可以算是真正意义上的零拷贝技术了。</p>
+<h2 id="柔性数组"><a href="#柔性数组" class="headerlink" title="柔性数组"></a>柔性数组</h2><p>之前在阅读ntytcp协议栈的时候发现用以数据传输的结构体中定义了一个char data[0] 这个东西我们平时编程中很少使用到，带着一些不解对这种数据结构做了一些了解：</p>
+<p>C99标准引入了柔性数组这一特性，这个柔性数组的大小可以根据程序运行中需要的大小进行更改。需要注意的是，<strong>柔性数组只能在结构体的最后一个成员进行定义</strong>，且该结构体必须最少包含一个其他数据类型的成员。例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">data_struct</span>&#123;</span><br><span class="line">  <span class="type">int</span> msg_length;</span><br><span class="line">  <span class="type">int</span> msg_id;</span><br><span class="line">  <span class="type">char</span> msg[<span class="number">0</span>];</span><br><span class="line">&#125;data_struct;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>柔性数组是不占用结构体的内存，也就是说<code>sizeof(struct)</code>不会计算柔性数组，如下：</p>
+<p><img src="https://files.mdnice.com/user/30550/968aca22-3c66-40eb-b914-8ca9ff2972f2.png" alt="柔性数组测试"></p>
+<p>可以看见在计算结构体占用内存的时候只计算了前两个int类型数据，并没有计算数组。</p>
+<p>至于它为什么不占用内存，感兴趣的小伙伴可以尝试将代码汇编一下，对比一下指针数组和柔性数组：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">f.a-&gt;s</span><br><span class="line"><span class="number">30</span>c30/<span class="number">36</span>c36</span><br><span class="line">&lt;   addq    $<span class="number">4</span>, %rax</span><br><span class="line">---</span><br><span class="line">&gt;   movq    <span class="number">8</span>(%rax), %rax</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://files.mdnice.com/user/30550/f906d030-9ea6-4bb8-94c1-62b538dca070.png"></p>
+<p><img src="https://files.mdnice.com/user/30550/e2680d7f-c0cb-4b6c-9ef2-a2a6b5385a43.png"></p>
+<p>addq这一步操作翻译过来： <code>%rax+sizeof(struct)</code> 该结构体的末尾正好是柔性数组，由于柔性数组只代表数据的其实地址，所以这一步只拿到了地址；但是movq 则是直接操作地址里面的内容。</p>
+<p>那么就可得，我们访问柔性数组就是在访问数组的相对地址，但是访问指针数组就是在访问相对地址里的内容。</p>
+<p>好了我们现在假设一个场景，现在服务器要下发一包不知道多大的数据给到客户端，现在关于数据接受有三种方案：</p>
+<blockquote>
+<p>采用定长数组缓存数据</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> LENGTH_MAX 1024</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">data_struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="type">int</span> data_length;</span><br><span class="line">	<span class="type">int</span> data_msg;</span><br><span class="line">	<span class="type">char</span> data[LENGTH_MAX];</span><br><span class="line">&#125;data_struct;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>采用指针数组缓存数据</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">data_struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="type">int</span> data_length;</span><br><span class="line">	<span class="type">int</span> data_msg;</span><br><span class="line">	<span class="type">char</span>  *data;</span><br><span class="line">&#125;data_struct;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>采用柔性数组缓存数据</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">data_struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="type">int</span> data_length;</span><br><span class="line">	<span class="type">int</span> data_msg;</span><br><span class="line">  <span class="type">char</span> data[<span class="number">0</span>];</span><br><span class="line">&#125;data_struct;</span><br></pre></td></tr></table></figure>
+
+<p>下面我们来看一下三个存储方式的优劣：</p>
+<p>首先第一种情况：客户看了想打人系列，用一个定长数组去存储数据，每一次下行数据无论大小都有占用固定大小的内存来存储数据，会造成设备内存的浪费。因此这种结构在实际的开发中一般很少用到。</p>
+<p>第二种指针数组存放：这是目前使用最普遍的一种数据类型，内存大小可以随意申请，使用完释放即可，比较节约空间；但是存在的一个问题：这种方法需要首先对结构体申请内存，其次对结构体数据域申请内存，也就是两次不连续的内存申请，这对程序猿来说是很不友好的，意味着我们需要进行两次内存释放。由于多数情况下申请的内存不会在同一个接口里面进行释放，这很容易导致内存泄漏。</p>
+<p>经典案例就是我司某款产品在客户现场由于云端下发数据帧申请的内存在另一个线程数据入队后没有及时释放，导致和云端进行6000+次通信后内存耗尽的情况，可谓损失惨重！</p>
+<p>第三种柔性数组存放：相较于第二种方法，使用柔性数组可以一次性申请任意大小的内存用于存放数据，注意是一次性，也就意味着我们可以一次性释放内存，这无疑大大减少了内存泄漏的风险：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">data_struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="type">int</span> data_length;</span><br><span class="line">	<span class="type">int</span> data_msg;</span><br><span class="line">  <span class="type">char</span>  data[<span class="number">0</span>];</span><br><span class="line">&#125;data_struct;</span><br><span class="line">data_struct * test_buf = <span class="literal">NULL</span>; </span><br><span class="line">    <span class="comment">///  开辟</span></span><br><span class="line"><span class="keyword">if</span> ((test_buf = (<span class="keyword">struct</span> data_struct *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">struct</span> data_struct) + <span class="keyword">sizeof</span>(<span class="type">char</span>) * CURR_LENGTH)) != <span class="literal">NULL</span>)</span><br><span class="line">&#123;</span><br><span class="line">    test_buf-&gt;len = CURR_LENGTH;</span><br><span class="line">    <span class="built_in">memcpy</span>(test_buf-&gt;data, <span class="string">&quot;Hello World&quot;</span>, CURR_LENGTH);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d, %s\n&quot;</span>, zbuffer-&gt;len, zbuffer-&gt;data);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">free</span>(test_buf); <span class="comment">//一次释放即可 </span></span><br><span class="line">test_buf = <span class="literal">NULL</span>;</span><br></pre></td></tr></table></figure>
+
+<p>总结一下，使用柔性数组进行数据缓存的优点：</p>
+<ul>
+<li>1.相比于定长数组来说节省空间和网络带宽</li>
+<li>2.相较于指针数组来说数组本身不占用空间，且可以一次性申请内存和释放内存，降低了内存泄漏的风险，同时也降低了内存碎片产生的概率。</li>
+</ul>
+</div>
+        </div>
+        
+            <div class="kratos-copyright text-center clearfix">
+                <h5 itemprop="copyrightNotice">本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</h5>
+            </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+                <div class="post-like-donate text-center clearfix" id="post-like-donate">
+                
+                
+                    <a class="share" href="javascript:;"><i class="fa fa-share-alt"></i> 分享</a>
+                    <div class="share-wrap" style="display: none;">
+    <div class="share-group">
+        <a href="javascript:;" class="share-plain qq" onclick="share('qq');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-qq"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain qzone" onclick="share('qzone');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-star"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weixin pop style-plain" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weixin"></i>
+            </div>
+            <div class="share-int">
+                <div class="qrcode" id="wechat-qr"></div>
+                <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weibo" onclick="share('weibo');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weibo"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain facebook style-plain" onclick="share('facebook');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-facebook"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain twitter style-plain" onclick="share('twitter');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-twitter"></i>
+            </div>
+        </a>
+    </div>
+    <script type="text/javascript">
+        $(()=>{
+            new QRCode("wechat-qr", {
+                text: "http://www.a-guang.cn/2022/10/22/ntytcp%E5%8D%8F%E8%AE%AE%E6%A0%88(%E9%9B%B6%E6%8B%B7%E8%B4%9D&%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84)/",
+                width: 150,
+                height: 150,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+        function share(dest) {
+            const qqBase        = "https://connect.qq.com/widget/shareqq/index.html?";
+            const weiboBase     = "https://service.weibo.com/share/share.php?";
+            const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
+            const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
+            const twitterBase   = "https://twitter.com/intent/tweet?";
+            const hostUrl       = "http://www.a-guang.cn/2022/10/22/ntytcp%E5%8D%8F%E8%AE%AE%E6%A0%88(%E9%9B%B6%E6%8B%B7%E8%B4%9D&%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84)/";
+            const title         = "「ntytcp协议栈(零拷贝&柔性数组)」";
+            const excerpt       = `ntytcp协议栈（零拷贝&amp;柔性数组）前言最近阿光在阅读一些优秀前辈的源码时，了解到了一套国产化的tcp&#x2F;ip协议栈—ntytcp协议栈，该协议栈由G站ID: wangbojing 先生开源。它是一套单线程用户态协议...`;
+            let _URL;
+            switch (dest) {
+                case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
+                case "weibo"    : _URL = weiboBase+"url="+hostUrl+"&title="+title+excerpt;                                 break;
+                case "qzone"    : _URL = qzoneBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";  break;
+                case "facebook" : _URL = facebookBase+"u="+hostUrl;                                                        break;
+                case "twitter"  : _URL = twitterBase+"text="+title+excerpt+"&url="+hostUrl;                                break;
+            }
+            window.open(_URL);
+        };
+    </script>
+</div>
+                
+                </div>
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    
+                </div>
+                <div class="pull-date">
+                    <time datetime="2022-10-22T07:45:46.523Z" itemprop="dateModified">最后编辑：2022-10-22</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" TCP协议C/S模型总结" href="/2022/07/23/TCP状态转移分析/">&lt; 上一篇</a>
+            </div>
+            
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+        
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/aguang.png" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center"></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/archives/">
+            <span class="title">
+                文章
+            </span>
+            <span class="count">
+                4
+            </span>
+        </a>
+        <a class="meta-item" href="/categories/">
+            <span class="title">
+                分类
+            </span>
+            <span class="count">
+                0
+            </span>
+        </a>
+        <a class="meta-item" href="/tags/">
+            <span class="title">
+                标签
+            </span>
+            <span class="count">
+                0
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                
+
+            
+                
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2022/10/22/ntytcp%E5%8D%8F%E8%AE%AE%E6%A0%88(%E9%9B%B6%E6%8B%B7%E8%B4%9D&%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84)/"><i class="fa  fa-book"></i> ntytcp协议栈(零拷贝&柔性数组)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2022/07/23/TCP%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%88%86%E6%9E%90/"><i class="fa  fa-book"></i> TCP协议C/S模型总结</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2022/07/16/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/"><i class="fa  fa-book"></i> 位运算的一些奇技淫巧</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2022/05/10/qianrushi/"><i class="fa  fa-book"></i> 嵌入式的几种数据校验方式</a>
+            
+          
+        
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://t.me/CandyUnion"><i class="fa fa-telegram"></i></a></li>
+                        
+                        
+                        
+                        <li><a target="_blank" rel="me" href="https://nya.one/@Candinya"><i class="fa fa fa-share-alt-square"></i></a></li>
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/Candinya"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2022 阿光的博客 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by 阿光.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="https://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://unpkg.com/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+<script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/";
+</script>
+
+
+    <script async src="/js/candy.min.js"></script>
+
+
+
+    <script defer src="https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://unpkg.com/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="3204190542"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://unpkg.com/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://unpkg.com/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
