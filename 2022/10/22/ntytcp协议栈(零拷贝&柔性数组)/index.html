@@ -24,7 +24,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.a-guang.cn/images/aguang.png">
 <meta property="article:published_time" content="2022-10-22T07:42:19.143Z">
-<meta property="article:modified_time" content="2022-10-22T07:45:46.523Z">
+<meta property="article:modified_time" content="2022-10-22T08:00:35.386Z">
 <meta property="article:author" content="阿光">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://www.a-guang.cn/images/aguang.png">
@@ -179,7 +179,7 @@
         <div class="kratos-post-content">
             <div id="expire-alert" class="alert alert-warning hidden" role="alert">
                 <div class="icon"><i class="fa fa-warning"></i></div>
-                <div class="text"><p>本文最后编辑于 <time datetime="1666424746523"></time> 前，其中的内容可能需要更新。</p></div>
+                <div class="text"><p>本文最后编辑于 <time datetime="1666425635386"></time> 前，其中的内容可能需要更新。</p></div>
             </div>
             
             <hr />
@@ -215,7 +215,7 @@
 
 <p>传统的IO流程包括read和write的过程</p>
 <p>大致的流程如下：</p>
-<p><img src="https://files.mdnice.com/user/30550/116e6b0e-8b63-4bf9-8cdc-8825b5f7401b.png"></p>
+<p><img src="https://pic1.imgdb.cn/item/6353a2a916f2c2beb18a90e9.jpg"></p>
 <blockquote>
 <p>1.应用程序调用read函数，向操作系统发起IO调用，上下文从用户态切换到内核态。</p>
 </blockquote>
@@ -241,10 +241,10 @@
 <p>1.虚拟内存空间远大于物理地址空间</p>
 <p>2.多个虚拟内存可以指向同一物理地址</p>
 <p>那么正是由于这种机制使得0拷贝的实现有了可能：</p>
-<p><img src="https://files.mdnice.com/user/30550/304d8eef-6aa0-4e54-9892-728c4ece2c00.png"></p>
+<p><img src="https://pic1.imgdb.cn/item/6353a2cd16f2c2beb18acace.jpg"></p>
 <h3 id="DMA技术"><a href="#DMA技术" class="headerlink" title="DMA技术"></a>DMA技术</h3><p>DMA即直接内存访问，他允许外部设备和内存直接进行IO数据传输，这个过程不需要CPU的参与</p>
 <p>简单的说他就是帮助CPU转发一下IO请求以及拷贝数据。这时候CPU资源就能被释放出来去做别的事情，提高CPU的利用效率。下面我们通过一张图来看下DMA都做了那些工作：</p>
-<p><img src="https://files.mdnice.com/user/30550/1b1d3c4c-481e-49d7-a039-a07df9adf7fc.png" alt="DMA"></p>
+<p><img src="https://pic1.imgdb.cn/item/6353a2e216f2c2beb18aed8d.jpg" alt="DMA"></p>
 <p>可以从上图看出来DMA方式区别于中断方式，直接绕过CPU请求将数据拷贝到主存，减少CPU资源消耗，硬件效率可以大大提高！</p>
 <h3 id="方式"><a href="#方式" class="headerlink" title="方式"></a>方式</h3><p>那么很明显我们要继续优化上述流程的话，只需要做到两点即可：</p>
 <ul>
@@ -274,13 +274,13 @@
 <p>C99标准引入了柔性数组这一特性，这个柔性数组的大小可以根据程序运行中需要的大小进行更改。需要注意的是，<strong>柔性数组只能在结构体的最后一个成员进行定义</strong>，且该结构体必须最少包含一个其他数据类型的成员。例如：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">data_struct</span>&#123;</span><br><span class="line">  <span class="type">int</span> msg_length;</span><br><span class="line">  <span class="type">int</span> msg_id;</span><br><span class="line">  <span class="type">char</span> msg[<span class="number">0</span>];</span><br><span class="line">&#125;data_struct;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>柔性数组是不占用结构体的内存，也就是说<code>sizeof(struct)</code>不会计算柔性数组，如下：</p>
-<p><img src="https://files.mdnice.com/user/30550/968aca22-3c66-40eb-b914-8ca9ff2972f2.png" alt="柔性数组测试"></p>
+<p><img src="https://pic1.imgdb.cn/item/6353a30316f2c2beb18b281c.jpg" alt="柔性数组测试"></p>
 <p>可以看见在计算结构体占用内存的时候只计算了前两个int类型数据，并没有计算数组。</p>
 <p>至于它为什么不占用内存，感兴趣的小伙伴可以尝试将代码汇编一下，对比一下指针数组和柔性数组：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">f.a-&gt;s</span><br><span class="line"><span class="number">30</span>c30/<span class="number">36</span>c36</span><br><span class="line">&lt;   addq    $<span class="number">4</span>, %rax</span><br><span class="line">---</span><br><span class="line">&gt;   movq    <span class="number">8</span>(%rax), %rax</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p><img src="https://files.mdnice.com/user/30550/f906d030-9ea6-4bb8-94c1-62b538dca070.png"></p>
-<p><img src="https://files.mdnice.com/user/30550/e2680d7f-c0cb-4b6c-9ef2-a2a6b5385a43.png"></p>
+<p><img src="https://pic1.imgdb.cn/item/6353a32016f2c2beb18b69c8.jpg"></p>
+<p><img src="https://pic1.imgdb.cn/item/6353a33416f2c2beb18b8a74.jpg"></p>
 <p>addq这一步操作翻译过来： <code>%rax+sizeof(struct)</code> 该结构体的末尾正好是柔性数组，由于柔性数组只代表数据的其实地址，所以这一步只拿到了地址；但是movq 则是直接操作地址里面的内容。</p>
 <p>那么就可得，我们访问柔性数组就是在访问数组的相对地址，但是访问指针数组就是在访问相对地址里的内容。</p>
 <p>好了我们现在假设一个场景，现在服务器要下发一包不知道多大的数据给到客户端，现在关于数据接受有三种方案：</p>
@@ -402,7 +402,7 @@
                     
                 </div>
                 <div class="pull-date">
-                    <time datetime="2022-10-22T07:45:46.523Z" itemprop="dateModified">最后编辑：2022-10-22</time>
+                    <time datetime="2022-10-22T08:00:35.386Z" itemprop="dateModified">最后编辑：2022-10-22</time>
                 </div>
             </div>
         </footer>
